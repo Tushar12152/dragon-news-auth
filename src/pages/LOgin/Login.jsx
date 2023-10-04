@@ -1,7 +1,37 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Shared/Navbar/Navbar";
+import { AuthContext } from "../../provider/AuthProvider";
+import { useContext } from "react";
+import { useState } from "react";
+import { AiFillEyeInvisible,AiFillEye } from 'react-icons/ai';
 
 const Login = () => {
+  const {signIn}=useContext(AuthContext)
+  const [showPassword,setShowPassword]=useState(true)
+ const navigate=useNavigate()
+ const location=useLocation()
+
+
+   const handleLogin=e=>{
+    e.preventDefault();
+    const form=new FormData(e.currentTarget);
+    const email=form.get('email')
+    const password=form.get('password')
+    console.log(email,password)
+       signIn(email,password)
+       .then(result=>{
+        console.log(result.user);
+          navigate(location?.state?location.state:'/')
+      
+        
+       })
+       .catch(error=>{
+        console.log(error)
+       })
+
+   }
+
+
     return (
 
         
@@ -15,7 +45,7 @@ const Login = () => {
    
     </div>
     <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-      <form className="card-body">
+      <form onSubmit={handleLogin} className="card-body">
     
        <div className="form-control">
           <label className="label">
@@ -27,7 +57,11 @@ const Login = () => {
           <label className="label">
             <span className="label-text">Password</span>
           </label>
-          <input type="password" name="password" placeholder="enter your password" className="input input-bordered" required />
+          <div className="relative">
+         <input type={showPassword?"password":"text"} name="password" placeholder="enter your password" className="input input-bordered w-full" required />
+
+              <span className="absolute top-4 right-1" onClick={()=>setShowPassword(!showPassword)}>{showPassword?<AiFillEye></AiFillEye>:<AiFillEyeInvisible></AiFillEyeInvisible>}</span>
+         </div>
         
         </div>
         <div className="form-control mt-6">
@@ -35,7 +69,7 @@ const Login = () => {
         </div>
        </form>
    
-       <p className="text-center p-5">Dont’t Have An Account ? <Link className="text-red-600" to='register'>Register</Link></p>
+       <p className="text-center p-5">Dont’t Have An Account ? <Link className="text-red-600" to='/register'>Register</Link></p>
     </div>
   </div>
 </div>
